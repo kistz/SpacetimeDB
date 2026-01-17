@@ -419,7 +419,7 @@ public static void SpawnEnemies(ReducerContext ctx, uint count)
 {
     for (uint i = 0; i < count; i++)
     {
-        ctx.Db.enemy.Insert(new Enemy
+        ctx.Db.Enemy.Insert(new Enemy
         {
             Id = 0, // auto_inc
             Health = 100
@@ -431,16 +431,15 @@ public static void SpawnEnemies(ReducerContext ctx, uint count)
 </TabItem>
 <TabItem value="rust" label="Rust">
 
-```rust
-#[spacetimedb::reducer]
-fn spawn_enemies(ctx: &ReducerContext, count: u32) {
-    for i in 0..count {
-        ctx.db.enemy().insert(Enemy {
-            id: 0, // auto_inc
-            health: 100,
-        });
-    }
-}
+```typescript
+spacetimedb.reducer('spawn_enemies', { count: t.u32() }, (ctx, { count }) => {
+  for (let i = 0; i < count; i++) {
+    ctx.db.enemy.insert({
+      id: 0, // auto_inc
+      health: 100,
+    });
+  }
+});
 ```
 
 </TabItem>
@@ -493,7 +492,7 @@ Be mindful of unbounded table growth:
 
 - Implement cleanup reducers for temporary data
 - Archive or delete old records
-- Use scheduled tables to automatically expire data
+- Use schedule tables to automatically expire data
 - Consider pagination for large result sets
 
 ## Next Steps

@@ -29,25 +29,22 @@ A SpacetimeDB **table** is a SQL database table. Tables are declared in a module
 
 <TabItem value="typescript" label="TypeScript">
 
-```typescript
-import { table, t } from 'spacetimedb/server';
-
-const players = table(
-  { name: 'players', public: true },
-  {
-    id: t.u64().primaryKey(),
-    name: t.string(),
-    age: t.u32(),
-    user: t.identity(),
-  }
-);
+```rust
+#[spacetimedb::table(name = players, public)]
+pub struct Player {
+   #[primary_key]
+   id: u64,
+   name: String,
+   age: u32,
+   user: Identity,
+}
 ```
 
 </TabItem>
 <TabItem value="csharp" label="C#">
 
 ```csharp
-[SpacetimeDB.Table(Name = "players", Public = true)]
+[SpacetimeDB.Table(Name = "Player", Public = true)]
 public partial struct Player
 {
     [SpacetimeDB.PrimaryKey]
@@ -193,7 +190,7 @@ spacetimedb.reducer('world', (ctx) => {
 ```
 
 While SpacetimeDB doesn't support nested transactions,
-a reducer can [schedule another reducer](/tables/scheduled-tables) to run at an interval,
+a reducer can [schedule another reducer](/tables/schedule-tables) to run at an interval,
 or at a specific time.
 
 </TabItem>
@@ -218,7 +215,7 @@ public static void World(ReducerContext ctx)
 ```
 
 While SpacetimeDB doesn't support nested transactions,
-a reducer can [schedule another reducer](/tables/scheduled-tables) to run at an interval,
+a reducer can [schedule another reducer](/tables/schedule-tables) to run at an interval,
 or at a specific time.
 
 </TabItem>

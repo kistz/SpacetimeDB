@@ -16,18 +16,21 @@ Runs once when the module is first published or when the database is cleared.
 <Tabs groupId="server-language" queryString>
 <TabItem value="typescript" label="TypeScript">
 
-```typescript
-spacetimedb.init((ctx) => {
-  console.log('Database initializing...');
-  
-  // Set up default data
-  if (ctx.db.settings.count === 0) {
-    ctx.db.settings.insert({
-      key: 'welcome_message',
-      value: 'Hello, SpacetimeDB!'
-    });
-  }
-});
+```rust
+#[reducer(init)]
+pub fn init(ctx: &ReducerContext) -> Result<(), String> {
+    log::info!("Database initializing...");
+    
+    // Set up default data
+    if ctx.db.settings().count() == 0 {
+        ctx.db.settings().try_insert(Settings {
+            key: "welcome_message".to_string(),
+            value: "Hello, SpacetimeDB!".to_string(),
+        })?;
+    }
+    
+    Ok(())
+}
 ```
 
 </TabItem>
@@ -40,9 +43,9 @@ public static void Init(ReducerContext ctx)
     Log.Info("Database initializing...");
     
     // Set up default data
-    if (ctx.Db.settings.Count == 0)
+    if (ctx.Db.Settings.Count == 0)
     {
-        ctx.Db.settings.Insert(new Settings
+        ctx.Db.Settings.Insert(new Settings
         {
             Key = "welcome_message",
             Value = "Hello, SpacetimeDB!"
@@ -87,20 +90,23 @@ Runs when a client establishes a connection.
 <Tabs groupId="server-language" queryString>
 <TabItem value="typescript" label="TypeScript">
 
-```typescript
-spacetimedb.clientConnected((ctx) => {
-  console.log(`Client connected: ${ctx.sender}`);
-  
-  // ctx.connectionId is guaranteed to be defined
-  const connId = ctx.connectionId!;
-  
-  // Initialize client session
-  ctx.db.sessions.insert({
-    connection_id: connId,
-    identity: ctx.sender,
-    connected_at: ctx.timestamp
-  });
-});
+```rust
+#[reducer(client_connected)]
+pub fn on_connect(ctx: &ReducerContext) -> Result<(), String> {
+    log::info!("Client connected: {}", ctx.sender);
+    
+    // ctx.connection_id is guaranteed to be Some(...)
+    let conn_id = ctx.connection_id.unwrap();
+    
+    // Initialize client session
+    ctx.db.sessions().try_insert(Session {
+        connection_id: conn_id,
+        identity: ctx.sender,
+        connected_at: ctx.timestamp,
+    })?;
+    
+    Ok(())
+}
 ```
 
 </TabItem>
@@ -116,7 +122,7 @@ public static void OnConnect(ReducerContext ctx)
     var connId = ctx.ConnectionId!.Value;
     
     // Initialize client session
-    ctx.Db.sessions.Insert(new Session
+    ctx.Db.Session.Insert(new Session
     {
         ConnectionId = connId,
         Identity = ctx.Sender,
@@ -188,26 +194,23 @@ public static void OnDisconnect(ReducerContext ctx)
     var connId = ctx.ConnectionId!.Value;
     
     // Clean up client session
-    ctx.Db.sessions.ConnectionId.Delete(connId);
+    ctx.Db.Session.ConnectionId.Delete(connId);
 }
 ```
 
 </TabItem>
 <TabItem value="rust" label="Rust">
 
-```rust
-#[reducer(client_disconnected)]
-pub fn on_disconnect(ctx: &ReducerContext) -> Result<(), String> {
-    log::info!("Client disconnected: {}", ctx.sender);
-    
-    // ctx.connection_id is guaranteed to be Some(...)
-    let conn_id = ctx.connection_id.unwrap();
-    
-    // Clean up client session
-    ctx.db.sessions().connection_id().delete(&conn_id);
-    
-    Ok(())
-}
+```typescript
+spacetimedb.clientDisconnected((ctx) => {
+  console.log(`Client disconnected: ${ctx.sender}`);
+  
+  // ctx.connectionId is guaranteed to be defined
+  const connId = ctx.connectionId!;
+  
+  // Clean up client session
+  ctx.db.sessions.connection_id.delete(connId);
+});
 ```
 
 </TabItem>
@@ -221,9 +224,9 @@ The `client_disconnected` reducer:
 
 ## Scheduled Reducers
 
-Reducers can be triggered at specific times using scheduled tables. See [Scheduled Tables](/tables/scheduled-tables) for details on:
+Reducers can be triggered at specific times using schedule tables. See [Schedule Tables](/tables/schedule-tables) for details on:
 
-- Defining scheduled tables
+- Defining schedule tables
 - Triggering reducers at specific timestamps
 - Running reducers periodically
 - Canceling scheduled executions
