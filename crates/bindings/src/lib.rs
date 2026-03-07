@@ -1446,12 +1446,18 @@ pub trait DbContext {
     /// Currently, being this generic is only meaningful in clients,
     /// as `ReducerContext` is the only implementor of `DbContext` within modules.
     fn db(&self) -> &Self::DbView;
+
+    fn db_read_only(&self) -> &LocalReadOnly;
 }
 
 impl DbContext for AnonymousViewContext {
     type DbView = LocalReadOnly;
 
     fn db(&self) -> &Self::DbView {
+        &self.db
+    }
+
+    fn db_read_only(&self) -> &LocalReadOnly {
         &self.db
     }
 }
@@ -1462,6 +1468,10 @@ impl DbContext for ReducerContext {
     fn db(&self) -> &Self::DbView {
         &self.db
     }
+
+    fn db_read_only(&self) -> &LocalReadOnly {
+        self.db.get_read_only()
+    }
 }
 
 #[cfg(feature = "unstable")]
@@ -1471,12 +1481,20 @@ impl DbContext for TxContext {
     fn db(&self) -> &Self::DbView {
         &self.db
     }
+
+    fn db_read_only(&self) -> &LocalReadOnly {
+        self.db.get_read_only()
+    }
 }
 
 impl DbContext for ViewContext {
     type DbView = LocalReadOnly;
 
     fn db(&self) -> &Self::DbView {
+        &self.db
+    }
+
+    fn db_read_only(&self) -> &LocalReadOnly {
         &self.db
     }
 }
@@ -1491,6 +1509,12 @@ impl DbContext for ViewContext {
 /// These are generated methods that allow you to access specific tables.
 #[non_exhaustive]
 pub struct Local {}
+
+impl Local {
+    fn get_read_only(&self) -> &LocalReadOnly {
+        &LocalReadOnly {}
+    }
+}
 
 /// The [JWT] of an [`AuthCtx`].
 ///
