@@ -937,6 +937,10 @@ impl ViewContext {
     pub fn sender(&self) -> Identity {
         self.sender
     }
+
+    pub fn as_anonymous_read_only(&self) -> AnonymousViewContext {
+        AnonymousViewContext::default()
+    }
 }
 
 /// The context that any reducer is provided with.
