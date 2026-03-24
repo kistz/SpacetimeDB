@@ -22,6 +22,7 @@ pub(crate) struct TableArgs {
     accessor: Ident,
     indices: Vec<IndexArg>,
     event: Option<Span>,
+    explicit_vis_private: Option<Span>,
 }
 
 enum TableAccess {
@@ -82,6 +83,8 @@ impl TableArgs {
         let mut name: Option<LitStr> = None;
         let mut indices = Vec::new();
         let mut event = None;
+        let mut explicit_vis_private = None;
+
         syn::meta::parser(|meta| {
             match_meta!(match meta {
                 sym::public => {
@@ -149,6 +152,10 @@ If you're migrating from SpacetimeDB 1.*, replace `name = {sym}` with `accessor 
                     check_duplicate(&event, &meta)?;
                     event = Some(meta.path.span());
                 }
+                sym::vis_private => {
+                    check_duplicate(&explicit_vis_private, &meta)?;
+                    explicit_vis_private = Some(meta.path.span());
+                }
             });
             Ok(())
         })
@@ -188,6 +195,7 @@ If you're migrating from SpacetimeDB 1.*, replace `name = {name_str_value:?}` wi
             indices,
             name,
             event,
+            explicit_vis_private,
         })
     }
 }
@@ -812,7 +820,10 @@ fn is_first_appearance(struct_name: &str) -> bool {
 }
 
 pub(crate) fn table_impl(mut args: TableArgs, item: &syn::DeriveInput) -> syn::Result<TokenStream> {
-    let vis = &item.vis;
+    let mut vis = &item.vis;
+    if args.explicit_vis_private.is_some() {
+        vis = &Visibility::Inherited;
+    }
     let sats_ty = sats::sats_type_from_derive(item, quote!(spacetimedb::spacetimedb_lib))?;
 
     let original_struct_ident = sats_ty.ident;
