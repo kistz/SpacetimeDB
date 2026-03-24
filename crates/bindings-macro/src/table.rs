@@ -822,7 +822,7 @@ fn is_first_appearance(struct_name: &str) -> bool {
 pub(crate) fn table_impl(mut args: TableArgs, item: &syn::DeriveInput) -> syn::Result<TokenStream> {
     let mut vis = &item.vis;
     if args.explicit_vis_private.is_some() {
-        vis = &Visibility::Inherited;
+        vis = &syn::Visibility::Inherited;
     }
     let sats_ty = sats::sats_type_from_derive(item, quote!(spacetimedb::spacetimedb_lib))?;
 
