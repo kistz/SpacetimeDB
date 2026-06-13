@@ -243,6 +243,7 @@ impl InstanceEnv {
     /// Returns the database's identity.
     pub fn database_identity(&self) -> &Identity {
         &self.replica_ctx.database.database_identity
+        self.relational_db()
     }
 
     /// Signal to this `InstanceEnv` that a function call is beginning.

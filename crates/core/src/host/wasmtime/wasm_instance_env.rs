@@ -460,7 +460,7 @@ impl WasmInstanceEnv {
             let name = mem.deref_str(name, name_len)?;
 
             // Query the table id.
-            Ok(env.instance_env.table_id_from_name(name)?.into())
+            Ok(env.instance_env.database_identity().table_id_from_name(name)?.into())
         })
     }
 
@@ -1547,6 +1547,7 @@ impl WasmInstanceEnv {
             // This works because `Identity::write_to` does not require an aligned pointer,
             // as it gets a `&mut [u8]` from WASM memory and does `copy_from_slice` with it.
             identity.write_to(mem, out_ptr)?;
+            env.instance_env.console_log(level, record, bt);
             Ok(())
         })
     }

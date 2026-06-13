@@ -885,6 +885,12 @@ pub mod raw {
         pub fn datastore_clear(table_id: TableId, out: *mut u64) -> u16;
     }
 
+    #[link(wasm_import_module = "spacetime_10.6")]
+    unsafe extern "C" {
+
+        pub fn disconnect_identity(identity: [u8; 32]) -> bool;
+    }
+
     /// What strategy does the database index use?
     ///
     /// See also: <https://www.postgresql.org/docs/current/sql-createindex.html>
@@ -1494,6 +1500,11 @@ pub fn get_jwt(connection_id: [u8; 16]) -> Option<raw::BytesSource> {
     } else {
         Some(source)
     }
+}
+
+#[inline]
+pub fn disconnect_identity(identity: [u8; 32]) -> bool {
+    unsafe { raw::disconnect_identity(identity.as_ptr()) }
 }
 
 pub struct RowIter {

@@ -1093,6 +1093,10 @@ impl ReducerContext {
         Identity::from_byte_array(spacetimedb_bindings_sys::identity())
     }
 
+    pub fn disconnect_identity(&self) -> bool {
+        spacetimedb_bindings_sys::identity()
+    }
+
     /// Read the current module's [`Identity`].
     #[deprecated(note = "Use `ReducerContext::database_identity` instead.")]
     pub fn identity(&self) -> Identity {
