@@ -1529,6 +1529,76 @@ impl Local {
     }
 }
 
+/// This trait allows you to be generic over all contexts that allow you to read from the db.
+/// including views, reducers and event procedures and http handlers through [TxContext].
+pub trait CtxDbRead {
+    fn db(&self) -> &LocalReadOnly;
+}
+
+impl CtxDbRead for TxContext {
+    fn db(&self) -> &LocalReadOnly {
+        &LocalReadOnly {}
+    }
+}
+
+impl CtxDbRead for ReducerContext {
+    fn db(&self) -> &LocalReadOnly {
+        &LocalReadOnly {}
+    }
+}
+
+impl CtxDbRead for ViewContext {
+    fn db(&self) -> &LocalReadOnly {
+        &LocalReadOnly {}
+    }
+}
+
+impl CtxDbRead for AnonymousViewContext {
+    fn db(&self) -> &LocalReadOnly {
+        &LocalReadOnly {}
+    }
+}
+
+/// This trait allows you to be generic over all contexts that allow read/write access to the db.
+pub trait CtxDbWrite {
+    fn db(&self) -> &Local;
+}
+
+impl CtxDbWrite for TxContext {
+    fn db(&self) -> &Local {
+        &Local {}
+    }
+}
+
+impl CtxDbWrite for ReducerContext {
+    fn db(&self) -> &Local {
+        &Local {}
+    }
+}
+
+/// This trait allows you to be generic over all contexts that allow to retrieve the caller identity.
+pub trait CtxWithSender {
+    fn sender(&self) -> Identity;
+}
+
+impl CtxWithSender for ViewContext {
+    fn sender(&self) -> Identity {
+        self.sender
+    }
+}
+
+impl CtxWithSender for ReducerContext {
+    fn sender(&self) -> Identity {
+        self.sender
+    }
+}
+
+impl CtxWithSender for TxContext {
+    fn sender(&self) -> Identity {
+        self.0.sender
+    }
+}
+
 /// The [JWT] of an [`AuthCtx`].
 ///
 /// [JWT]: https://en.wikipedia.org/wiki/JSON_Web_Token
