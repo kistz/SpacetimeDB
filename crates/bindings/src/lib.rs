@@ -1564,7 +1564,7 @@ impl CtxDbRead for AnonymousViewContext {
 }
 
 /// This trait allows you to be generic over all contexts that allow read/write access to the db.
-pub trait CtxDbWrite {
+pub trait CtxDbWrite: CtxDbRead {
     fn db(&self) -> &Local;
 }
 
