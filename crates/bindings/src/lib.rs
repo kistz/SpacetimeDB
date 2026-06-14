@@ -1580,7 +1580,7 @@ impl CtxDbWrite for ReducerContext {
     }
 }
 
-/// This trait allows you to be generic over all contexts that allow to retrieve the caller identity.
+/// This trait allows you to be generic over all contexts that allow to retrieve the caller [Identity].
 pub trait CtxWithSender {
     fn sender(&self) -> Identity;
 }
