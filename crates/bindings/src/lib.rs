@@ -1603,6 +1603,23 @@ impl CtxWithSender for TxContext {
     }
 }
 
+/// This trait allows you to be generic over all contexts that allow to retrieve the [Timestamp] of calling them.
+pub trait CtxWithTimestamp {
+    fn timestamp(&self) -> Timestamp;
+}
+
+impl CtxWithTimestamp for ReducerContext {
+    fn timestamp(&self) -> Timestamp {
+        self.timestamp
+    }
+}
+
+impl CtxWithTimestamp for TxContext {
+    fn timestamp(&self) -> Timestamp {
+        self.timestamp
+    }
+}
+
 /// The [JWT] of an [`AuthCtx`].
 ///
 /// [JWT]: https://en.wikipedia.org/wiki/JSON_Web_Token
