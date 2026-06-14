@@ -1444,6 +1444,7 @@ impl ProcedureContext {
 }
 
 /// A handle on a database with a particular table schema.
+#[deprecated(note = "User other ctxs instead!")]
 pub trait DbContext {
     /// A view into the tables of a database.
     ///
@@ -1463,6 +1464,7 @@ pub trait DbContext {
     fn db_read_only(&self) -> &LocalReadOnly;
 }
 
+#[allow(deprecated)]
 impl DbContext for AnonymousViewContext {
     type DbView = LocalReadOnly;
 
@@ -1475,6 +1477,7 @@ impl DbContext for AnonymousViewContext {
     }
 }
 
+#[allow(deprecated)]
 impl DbContext for ReducerContext {
     type DbView = Local;
 
@@ -1487,7 +1490,7 @@ impl DbContext for ReducerContext {
     }
 }
 
-#[cfg(feature = "unstable")]
+#[allow(deprecated)]
 impl DbContext for TxContext {
     type DbView = Local;
 
@@ -1500,6 +1503,7 @@ impl DbContext for TxContext {
     }
 }
 
+#[allow(deprecated)]
 impl DbContext for ViewContext {
     type DbView = LocalReadOnly;
 
