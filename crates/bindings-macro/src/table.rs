@@ -573,16 +573,16 @@ impl ValidatedIndex<'_> {
         flavor: AccessorType,
     ) -> TokenStream {
         if self.is_unique {
-            self.unique_accessor(row_type_ident, tbl_type_ident, flavor)
+            self.unique_accessor(vis, row_type_ident, tbl_type_ident, flavor)
         } else {
             self.non_unique_accessor(vis, row_type_ident, tbl_type_ident, flavor)
         }
     }
 
-    fn unique_accessor(&self, row_type_ident: &Ident, tbl_type_ident: &Ident, flavor: AccessorType) -> TokenStream {
+    fn unique_accessor(&self, vis: &syn::Visibility, row_type_ident: &Ident, tbl_type_ident: &Ident, flavor: AccessorType) -> TokenStream {
         let col = self.kind.one_col().unwrap();
         let index_ident = self.accessor_name;
-        let vis = col.vis;
+        //let vis = col.vis;
         let col_ty = col.ty;
         let column_ident = col.ident;
 
