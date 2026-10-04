@@ -666,7 +666,8 @@ impl ValidatedIndex<'_> {
             ValidatedIndexType::Hash { .. } => (None, false),
         };
         let vis = if self.is_unique {
-            self.kind.one_col().unwrap().vis
+            //self.kind.one_col().unwrap().vis
+            vis
         } else {
             vis
         };
