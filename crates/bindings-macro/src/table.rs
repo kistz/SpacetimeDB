@@ -665,12 +665,7 @@ impl ValidatedIndex<'_> {
             }
             ValidatedIndexType::Hash { .. } => (None, false),
         };
-        let vis = if self.is_unique {
-            //self.kind.one_col().unwrap().vis
-            vis
-        } else {
-            vis
-        };
+        
         let vis = superize_vis(vis);
 
         let cols = self.kind.columns();
